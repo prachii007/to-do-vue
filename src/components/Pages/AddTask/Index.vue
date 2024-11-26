@@ -1,7 +1,9 @@
 <script setup>
 import AddEditForm from '@/components/Common/AddEditForm.vue';
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const taskName = ref('')
 const taskDescription = ref('')
 const taskPriority = ref('Low')
@@ -10,9 +12,9 @@ const taskList = ref(JSON.parse(localStorage.getItem('todos')) || [])
 const handleAdd = () => {
     if (taskName.value !== "") {
         const taskInfo = {
-            task: taskName.value,
-            description: taskDescription.value,
-            priority: taskPriority.value,
+            taskName: taskName.value,
+            taskDescription: taskDescription.value,
+            taskPriority: taskPriority.value,
             isChecked: false,
             id: Date.now(),
             date: new Date().toISOString(),
@@ -23,6 +25,7 @@ const handleAdd = () => {
         taskName.value = '';
         taskDescription.value = '';
         taskPriority.value = '';
+        router.push({ name: 'home' }) // Navigate to the home Task page
     }
 }
 
@@ -38,13 +41,8 @@ const updateTaskField = (field, value) => {
 </script>
 
 <template>
-    <AddEditForm 
-    :task-name="taskName"
-    :task-description="taskDescription"
-    :task-priority="taskPriority"
-    @update-task="updateTaskField"
-    @add-task="handleAdd"
-    feature="Add"/>
+    <AddEditForm :task-name="taskName" :task-description="taskDescription" :task-priority="taskPriority"
+        @update-task="updateTaskField" @add-task="handleAdd" feature="Add" />
 </template>
 
 <style lang="scss" scoped></style>

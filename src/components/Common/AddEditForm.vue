@@ -22,7 +22,7 @@ const emit = defineEmits(['update-task', 'add-task']);
                 <label htmlFor='taskDescription' className='mb-2'>Task Description</label>
                 <textarea className='form-control' id='taskDescription' :value='taskDescription' rows={5}
                     placeholder='Write description of your task in detail here..'
-                    @input="$emit('update-task', 'taskDescription', $event.target.value)" />
+                    @input="$emit('update-task', 'description', $event.target.value)" />
             </div>
             <div className='mb-5 row'>
                 <label htmlFor='taskPriority' className='mb-2'>Priority Level</label>

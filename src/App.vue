@@ -3,17 +3,17 @@
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
+  <div class="">
+    <div>
       <router-link :to="{ name: 'home' }">Home</router-link> |
       <router-link :to="{ name: 'add' }">Add Task</router-link>|
       <router-link to="/non-existent-path">Broken Link</router-link>
     </div>
-  </header>
+    <div>
+      <router-view />
+    </div>
+  </div>
 
-  <main>
-    <router-view />
-  </main>
 </template>
 
 <style scoped>
