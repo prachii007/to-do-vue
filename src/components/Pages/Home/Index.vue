@@ -15,7 +15,9 @@ const handleEdit = (todo) => {
 }
 
 const handleDelete = (todo) => {
-
+  const data = todos.value.filter(x => x.id !== todo.id)
+  todos.value = data
+  localStorage.setItem('todos', JSON.stringify(data))
 }
 
 const handleCheck = (todo) => {
