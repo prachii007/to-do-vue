@@ -1,10 +1,11 @@
 <script setup>
-import classNames from 'classnames'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router' // use useRouter to go to new page, not useRoute
 
 const router = useRouter()
 const action = ref('all')
+const sortOrder = ref('desc')
+const priorityOrder = ref('All')
 
 const todosFromLS = ref(
   (JSON.parse(localStorage.getItem('todos')) || []).map(task => ({
@@ -14,15 +15,29 @@ const todosFromLS = ref(
 )
 
 const filteredTodos = computed(() => {
-  switch (action.value) {
-    case 'unchecked':
-      return todosFromLS.value.filter(todo => !todo.isDone)
-    case 'checked':
-      return todosFromLS.value.filter(todo => todo.isDone)
-    default:
-      return todosFromLS.value
+  
+  let result = [...todosFromLS.value];
+
+  // Filter by status
+  if (action.value === 'checked') {
+    result = result.filter(todo => todo.isDone);
+  } else if (action.value === 'unchecked') {
+    result = result.filter(todo => !todo.isDone);
   }
-})
+
+  // Filter by priority
+  if (priorityOrder.value !== 'All') {
+    result = result.filter(todo => todo.taskPriority === priorityOrder.value);
+  }
+
+  // Sort by date
+  result.sort((a, b) =>
+    sortOrder.value === 'desc' ? b.date - a.date : a.date - b.date
+  );
+
+  return result;
+});
+
 
 const updateLocalStorage = () => {
   localStorage.setItem('todos', JSON.stringify(todosFromLS.value))
@@ -61,14 +76,14 @@ const handleDelete = todo => {
         </div>
         <div>
           <label for="sortOrder">Sort Order</label>
-          <select id="sortOrder" class="form-select">
+          <select id="sortOrder" class="form-select" v-model="sortOrder">
             <option value="asc">Ascending</option>
-            <option value="desc">Desceding</option>
+            <option value="desc">Descending</option>
           </select>
         </div>
         <div>
           <label for="priorityOrder">Priority Order</label>
-          <select id="priorityOrder" class="form-select">
+          <select id="priorityOrder" class="form-select" v-model="priorityOrder">
             <option value="All">All</option>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
