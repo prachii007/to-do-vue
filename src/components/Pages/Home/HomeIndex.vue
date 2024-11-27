@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router' // use useRouter to go to new page, not useRoute
 
 const router = useRouter()
-const action = ref('all')
+const action = ref('All')
 const sortOrder = ref('desc')
 const priorityOrder = ref(['All'])
 const tags = ref([])
@@ -32,8 +32,8 @@ const filteredTodos = computed(() => {
     result = result.filter(todo => priorityOrder.value.includes(todo.taskPriority));
   }
 
-   // Filter by tags
-   if (tags.value.length > 0) {
+  // Filter by tags
+  if (tags.value.length > 0) {
     result = result.filter(todo =>
       tags.value.some(tag => todo.taskTags.includes(tag))
     );
@@ -102,6 +102,7 @@ const handleTagsCheck = (tag) => {
   }
 }
 
+console.log(sortOrder.value)
 </script>
 
 <template>
@@ -115,12 +116,18 @@ const handleTagsCheck = (tag) => {
           <button class="btn btn-warning" @click="action = 'Unchecked'">Show Unchecked</button>
           <button class="btn btn-success" @click="action = 'Checked'">Show Checked</button>
         </div>
-        <div>
-          <label for="sortOrder">Sort by date of creation</label>
-          <select id="sortOrder" class="form-select" v-model="sortOrder">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+        <div class="d-flex">
+          <div for="sortOrder">Date of creation : </div>
+          <div class="d-flex">
+            <div class="mx-2 d-flex">
+              <label>Latest</label>
+              <input type="radio" name="sortOrder" value="desc" class="form-check ms-2" v-model="sortOrder" />
+            </div>
+            <div class="d-flex">
+              <label>Oldest</label>
+              <input type="radio" name="sortOrder" value="asc" class="form-check ms-2" v-model="sortOrder" />
+            </div>
+          </div>
         </div>
         <div class="d-flex">
           <div class="me-4">
