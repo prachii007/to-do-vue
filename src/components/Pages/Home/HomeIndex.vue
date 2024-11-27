@@ -93,7 +93,7 @@ const handleDelete = todo => {
         </div>
       </div>
       <div>
-        <h2>Show</h2>
+        <h2>Show {{ filteredTodos.length }}</h2>
         <div class="card mb-2" v-for="todo in filteredTodos" :key="todo.id">
           <div class="card-header d-flex justify-content-between">
             <div class="text-success">Created {{ todo.date.toLocaleString() }}</div>

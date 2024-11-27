@@ -1,7 +1,7 @@
 // router.js
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from './components/Pages/Home/Index.vue';
-import AddTask from './components/Pages/AddTask/Index.vue';
+import Home from './components/Pages/Home/HomeIndex.vue';
+import AddTask from './components/Pages/AddTask/AddTaskIndex.vue';
 import EditTask from './components/Pages/EditTask/Index.vue'
 import NotFound from './components/Pages/NotFound.vue'; // Optional 404 page
 
