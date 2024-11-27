@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router' // use useRouter to go to new page, not u
 const router = useRouter()
 const action = ref('all')
 const sortOrder = ref('desc')
-const priorityOrder = ref('All')
+const priorityOrder = ref(['All'])
 
 const todosFromLS = ref(
   (JSON.parse(localStorage.getItem('todos')) || []).map(task => ({
@@ -20,15 +20,15 @@ const filteredTodos = computed(() => {
   let result = [...todosFromLS.value];
 
   // Filter by status
-  if (action.value === 'checked') {
+  if (action.value === 'Checked') {
     result = result.filter(todo => todo.isDone);
-  } else if (action.value === 'unchecked') {
+  } else if (action.value === 'Unchecked') {
     result = result.filter(todo => !todo.isDone);
   }
 
   // Filter by priority
-  if (priorityOrder.value !== 'All') {
-    result = result.filter(todo => todo.taskPriority === priorityOrder.value);
+  if (!priorityOrder.value.includes('All') && priorityOrder.value.length > 0) {
+    result = result.filter(todo => priorityOrder.value.includes(todo.taskPriority));
   }
 
   // Sort by date
@@ -62,6 +62,31 @@ const handleDelete = todo => {
   updateLocalStorage()
 }
 
+const handleDeleteAll = () => {
+  todosFromLS.value = []
+  updateLocalStorage()
+}
+
+const handlePriorityCheck = (priority) => {
+  if (priority === 'All') {
+    if (priorityOrder.value.includes('All')) {
+      priorityOrder.value = []; // Uncheck all
+    } else {
+      priorityOrder.value = ['All']; // Select all
+    }
+  } else {
+    const contains = priorityOrder.value.includes(priority);
+    if (contains) {
+      priorityOrder.value = priorityOrder.value.filter(x => x !== priority);
+    } else {
+      priorityOrder.value.push(priority);
+    }
+    // If any specific priority is selected, remove "All"
+    priorityOrder.value = priorityOrder.value.filter(x => x !== 'All');
+  }
+}
+
+
 </script>
 
 <template>
@@ -69,14 +94,14 @@ const handleDelete = todo => {
     <h1 class="text-center">Task List</h1>
     <div class="row">
       <div>
-        <btn @click="handleAdd" class="btn btn-danger">Add Task</btn>
+        <button @click="handleAdd" class="btn btn-danger">Add Task</button>
         <div class="btn btn-group">
-          <button class="btn btn-primary" @click="action = 'all'">Show All</button>
-          <button class="btn btn-warning" @click="action = 'unchecked'">Show Unchecked</button>
-          <button class="btn btn-success" @click="action = 'checked'">Show Checked</button>
+          <button class="btn btn-primary" @click="action = 'All'">Show All</button>
+          <button class="btn btn-warning" @click="action = 'Unchecked'">Show Unchecked</button>
+          <button class="btn btn-success" @click="action = 'Checked'">Show Checked</button>
         </div>
         <div>
-          <label for="sortOrder">Sort Order</label>
+          <label for="sortOrder">Sort by date of creation</label>
           <select id="sortOrder" class="form-select" v-model="sortOrder">
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -84,16 +109,33 @@ const handleDelete = todo => {
         </div>
         <div>
           <label for="priorityOrder">Priority Order</label>
-          <select id="priorityOrder" class="form-select" v-model="priorityOrder">
-            <option value="All">All</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
+          <div class="d-flex">
+            <input type="checkbox" id="High" class="form-check mx-2" @change="handlePriorityCheck('High')"
+              :checked="priorityOrder.includes('High')" />
+            <label htmlFor="High">High</label>
+          </div>
+          <div class="d-flex">
+            <input type="checkbox" id="Medium" class="form-check mx-2" @change="handlePriorityCheck('Medium')"
+              :checked="priorityOrder.includes('Medium')" />
+            <label htmlFor="Medium">Medium</label>
+          </div>
+          <div class="d-flex">
+            <input type="checkbox" id="Low" class="form-check mx-2" @change="handlePriorityCheck('Low')"
+              :checked="priorityOrder.includes('Low')" />
+            <label htmlFor="Low">Low</label>
+          </div>
+          <div class="d-flex">
+            <input type="checkbox" id="All" class="form-check mx-2" @change="handlePriorityCheck('All')"
+              :checked="priorityOrder.includes('All')" />
+            <label htmlFor="All">All</label>
+          </div>
         </div>
       </div>
       <div>
-        <h2>Show {{ filteredTodos.length }}</h2>
+        <div class="d-flex justify-content-center mt-4">
+          <h2>{{ action }} Tasks ({{ filteredTodos.length }})</h2>
+          <button class="btn btn-danger ms-2" @click="handleDeleteAll">Delete All</button>
+        </div>
         <div class="card mb-2" v-for="todo in filteredTodos" :key="todo.id">
           <div class="card-header d-flex justify-content-between">
             <div class="text-success">Created {{ todo.date.toLocaleString() }}</div>
