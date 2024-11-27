@@ -6,6 +6,7 @@ const router = useRouter()
 const action = ref('all')
 const sortOrder = ref('desc')
 const priorityOrder = ref(['All'])
+const tags = ref([])
 
 const todosFromLS = ref(
   (JSON.parse(localStorage.getItem('todos')) || []).map(task => ({
@@ -31,6 +32,12 @@ const filteredTodos = computed(() => {
     result = result.filter(todo => priorityOrder.value.includes(todo.taskPriority));
   }
 
+   // Filter by tags
+   if (tags.value.length > 0) {
+    result = result.filter(todo =>
+      tags.value.some(tag => todo.taskTags.includes(tag))
+    );
+  }
   // Sort by date
   result.sort((a, b) =>
     sortOrder.value === 'desc' ? b.date - a.date : a.date - b.date
@@ -39,7 +46,7 @@ const filteredTodos = computed(() => {
   return result;
 });
 
-
+console.log('todos', filteredTodos.value)
 const updateLocalStorage = () => {
   localStorage.setItem('todos', JSON.stringify(todosFromLS.value))
 }
@@ -86,6 +93,14 @@ const handlePriorityCheck = (priority) => {
   }
 }
 
+const handleTagsCheck = (tag) => {
+  const contains = tags.value.includes(tag);
+  if (contains) {
+    tags.value = tags.value.filter(x => x !== tag);
+  } else {
+    tags.value.push(tag);
+  }
+}
 
 </script>
 
@@ -107,27 +122,47 @@ const handlePriorityCheck = (priority) => {
             <option value="desc">Descending</option>
           </select>
         </div>
-        <div>
-          <label for="priorityOrder">Priority Order</label>
-          <div class="d-flex">
-            <input type="checkbox" id="High" class="form-check mx-2" @change="handlePriorityCheck('High')"
-              :checked="priorityOrder.includes('High')" />
-            <label htmlFor="High">High</label>
+        <div class="d-flex">
+          <div class="me-4">
+            <label for="priorityOrder">Priority</label>
+            <div class="d-flex">
+              <input type="checkbox" id="High" class="form-check mx-2" @change="handlePriorityCheck('High')"
+                :checked="priorityOrder.includes('High')" />
+              <label htmlFor="High">High</label>
+            </div>
+            <div class="d-flex">
+              <input type="checkbox" id="Medium" class="form-check mx-2" @change="handlePriorityCheck('Medium')"
+                :checked="priorityOrder.includes('Medium')" />
+              <label htmlFor="Medium">Medium</label>
+            </div>
+            <div class="d-flex">
+              <input type="checkbox" id="Low" class="form-check mx-2" @change="handlePriorityCheck('Low')"
+                :checked="priorityOrder.includes('Low')" />
+              <label htmlFor="Low">Low</label>
+            </div>
+            <div class="d-flex">
+              <input type="checkbox" id="All" class="form-check mx-2" @change="handlePriorityCheck('All')"
+                :checked="priorityOrder.includes('All')" />
+              <label htmlFor="All">All</label>
+            </div>
           </div>
-          <div class="d-flex">
-            <input type="checkbox" id="Medium" class="form-check mx-2" @change="handlePriorityCheck('Medium')"
-              :checked="priorityOrder.includes('Medium')" />
-            <label htmlFor="Medium">Medium</label>
-          </div>
-          <div class="d-flex">
-            <input type="checkbox" id="Low" class="form-check mx-2" @change="handlePriorityCheck('Low')"
-              :checked="priorityOrder.includes('Low')" />
-            <label htmlFor="Low">Low</label>
-          </div>
-          <div class="d-flex">
-            <input type="checkbox" id="All" class="form-check mx-2" @change="handlePriorityCheck('All')"
-              :checked="priorityOrder.includes('All')" />
-            <label htmlFor="All">All</label>
+          <div>
+            <label for="tags">Tags</label>
+            <div class="d-flex">
+              <input type="checkbox" id="study" class="form-check mx-2" @change="handleTagsCheck('study')"
+                :checked="tags.includes('study')" />
+              <label htmlFor="study">study</label>
+            </div>
+            <div class="d-flex">
+              <input type="checkbox" id="work" class="form-check mx-2" @change="handleTagsCheck('work')"
+                :checked="tags.includes('work')" />
+              <label htmlFor="work">work</label>
+            </div>
+            <div class="d-flex">
+              <input type="checkbox" id="shopping" class="form-check mx-2" @change="handleTagsCheck('shopping')"
+                :checked="tags.includes('shopping')" />
+              <label htmlFor="shopping">shopping</label>
+            </div>
           </div>
         </div>
       </div>
